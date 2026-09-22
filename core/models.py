@@ -2,7 +2,7 @@ from django.db import models
 
 
 class SiteSettings(models.Model):
-    site_title = models.CharField(max_length=120, default="Khushaank Gupta's Weblog")
+    site_title = models.CharField(max_length=120, default="Khushaank's Blog")
     short_description = models.CharField(max_length=255, default="Notes, essays and useful things by Khushaank Gupta.")
     author_name = models.CharField(max_length=120, default="Khushaank Gupta")
     start_year = models.PositiveSmallIntegerField(default=2026)

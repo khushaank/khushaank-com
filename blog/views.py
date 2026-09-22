@@ -145,7 +145,7 @@ def subscribe(request): return render(request, "blog/subscribe.html")
 
 
 class AllContentFeed(Feed):
-    title = "Khushaank Gupta's Weblog"
+    title = "Khushaank's Blog"
     link = "/"
     description = "Recent writing and notes."
     def items(self): return [item for item, _ in public_timeline()[:30]]

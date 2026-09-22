@@ -40,7 +40,7 @@ h1, h2, h3 { line-height: 1.15; }
 
 /* Home header */
 .on-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 13px 0 9px; }
-.on-tags > span { margin-right: 3px; font-weight: 700; }
+.on-tags > span { margin-right: 3px; font-weight: 400; }
 .tag-pill { display: inline-flex; align-items: baseline; gap: 5px; padding: 2px 6px; border: 1px solid #bbb; border-radius: 5px; background: var(--soft); color: var(--ink); text-decoration: none; line-height: 1.25; }
 .tag-pill b { color: var(--muted); font-size: .72em; font-weight: 400; }
 .all-tags { margin-left: 2px; color: var(--blue); font-weight: 700; text-decoration: none; }
@@ -55,6 +55,7 @@ button, .search-form button { min-height: 40px; padding: 5px 15px; border-color:
 .content-nav .wrapper { display: grid; grid-template-columns: 760px 350px; column-gap: 48px; min-height: 44px; }
 .content-nav-links { display: flex; flex-wrap: wrap; align-items: center; }
 .content-nav a { padding: 10px 11px; color: #fff; font-size: 18px; line-height: 26px; text-decoration: none; }
+.content-nav-links a:first-child { padding-left: 0; }
 .content-nav a:hover { background: rgb(255 255 255 / 14%); }
 .content-nav .nav-right { align-self: center; justify-self: start; }
 

@@ -20,6 +20,7 @@ class PublishingTests(TestCase):
 
     def test_home_shows_only_current_month_and_no_drafts(self):
         response = self.client.get(reverse("home"))
+        self.assertEqual(response.context["site_settings"].site_title, "Khushaank's Blog")
         self.assertContains(response, self.current.title)
         self.assertNotIn(self.old, [item for group in response.context["day_groups"] for item, _ in group[1]])
         self.assertNotContains(response, self.draft.title)
