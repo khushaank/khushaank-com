@@ -5,7 +5,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from core.models import SiteSettings
+from core.models import Page, SiteSettings
 from .models import Entry, Link, Note, Tag
 
 
@@ -49,6 +49,11 @@ class PublishingTests(TestCase):
         response = self.client.get("/admin/")
         self.assertEqual(response.status_code, 302)
         self.assertIn("/admin/login/", response.url)
+
+    def test_about_page_uses_owner_copy(self):
+        response = self.client.get("/about/")
+        self.assertContains(response, "Hey, I’m Khushaank.")
+        self.assertEqual(Page.objects.get(slug="about").title, "About")
 
     def test_ensure_superuser_only_creates_once(self):
         variables = {"DJANGO_SUPERUSER_USERNAME": "render-admin", "DJANGO_SUPERUSER_EMAIL": "admin@example.test", "DJANGO_SUPERUSER_PASSWORD": "first-safe-password"}
