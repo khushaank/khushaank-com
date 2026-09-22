@@ -1,6 +1,7 @@
 from pathlib import Path
-from urllib.parse import urlparse
 import os
+import sys
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,15 +35,11 @@ TEMPLATES = [{
 }]
 WSGI_APPLICATION = "config.wsgi.application"
 
-def database_from_url(url):
-    if not url:
-        return {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3"}
-    parsed = urlparse(url)
-    return {"ENGINE": "django.db.backends.postgresql", "NAME": parsed.path.lstrip("/"), "USER": parsed.username,
-            "PASSWORD": parsed.password, "HOST": parsed.hostname, "PORT": parsed.port or 5432,
-            "CONN_MAX_AGE": 60}
-
-DATABASES = {"default": database_from_url(os.getenv("DATABASE_URL", ""))}
+DATABASES = {"default": dj_database_url.config(
+    default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+    conn_max_age=60,
+    conn_health_checks=True,
+)}
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -53,15 +50,23 @@ AUTH_PASSWORD_VALIDATORS = [
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+WHITENOISE_MANIFEST_STRICT = not DEBUG
+WHITENOISE_USE_FINDERS = DEBUG
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage" if "test" in sys.argv else "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
 if os.getenv("USE_S3_MEDIA", "False").lower() == "true":
-    STORAGES = {"default": {"BACKEND": "storages.backends.s3.S3Storage", "OPTIONS": {
+    STORAGES["default"] = {"BACKEND": "storages.backends.s3.S3Storage", "OPTIONS": {
         "access_key": os.getenv("AWS_ACCESS_KEY_ID"), "secret_key": os.getenv("AWS_SECRET_ACCESS_KEY"),
         "bucket_name": os.getenv("AWS_STORAGE_BUCKET_NAME"), "endpoint_url": os.getenv("AWS_S3_ENDPOINT_URL"),
-        "region_name": os.getenv("AWS_S3_REGION_NAME"), "custom_domain": os.getenv("MEDIA_CDN_DOMAIN") or None,
-    }}, "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}}
+        "region_name": os.getenv("AWS_S3_REGION_NAME"), "signature_version": "s3v4",
+        "addressing_style": os.getenv("AWS_S3_ADDRESSING_STYLE", "path"),
+        "querystring_auth": False, "file_overwrite": False,
+        "custom_domain": os.getenv("MEDIA_CDN_DOMAIN") or None,
+    }}
 
 SITE_ID = 1
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

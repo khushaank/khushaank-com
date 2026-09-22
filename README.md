@@ -48,3 +48,33 @@ gunicorn config.wsgi:application --bind 0.0.0.0:8000
 ```
 
 Cloudflare may cache anonymous public HTML (the app sends a short public cache policy) but must bypass `/admin/` and authenticated preview/admin traffic. WhiteNoise serves static files; uploaded media belongs in object storage in production.
+
+## Deploy on Render with Supabase
+
+This repository deploys as a **Render Web Service** using its `Dockerfile`. GitHub is source control only; Render runs the Django application.
+
+1. Create a Supabase project and a **public** Storage bucket, for example `blog-media`. Public is intentional here: this site uses stable public URLs for published images and videos. Do not put private uploads in this bucket. Generate server-only S3 access keys in Supabase Storage settings; never expose them in browser code.
+2. In Supabase **Connect**, select **Shared pooler → Session mode** and copy its port-`5432` connection string. Render is commonly IPv4-only, while Supabase's direct endpoint is IPv6-only without its IPv4 add-on. Keep `sslmode=require` in the URL and percent-encode special characters in the password.
+3. Create a Render Web Service from this GitHub repository using the Docker runtime. Add these secret environment variables in Render:
+
+   ```text
+   DEBUG=False
+   SECRET_KEY=<long random secret>
+   ALLOWED_HOSTS=<your-render-hostname>,<your-domain>
+   SITE_URL=https://<your-domain-or-render-hostname>
+   DATABASE_URL=postgresql://postgres.<project-ref>:<password>@<shared-pooler-host>:5432/postgres?sslmode=require
+   USE_S3_MEDIA=True
+   AWS_ACCESS_KEY_ID=<Supabase S3 access key>
+   AWS_SECRET_ACCESS_KEY=<Supabase S3 secret>
+   AWS_STORAGE_BUCKET_NAME=blog-media
+   AWS_S3_ENDPOINT_URL=https://<project-ref>.storage.supabase.co/storage/v1/s3
+   AWS_S3_REGION_NAME=<Supabase project region>
+   AWS_S3_ADDRESSING_STYLE=path
+   MEDIA_CDN_DOMAIN=<project-ref>.supabase.co/storage/v1/object/public/blog-media
+   ```
+
+4. Optionally set `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL`, and `DJANGO_SUPERUSER_PASSWORD` once. On every deploy, startup runs migrations, then creates that user only when the username does not already exist; it never changes an existing password. Omit all three to create admins manually.
+
+Render supplies `PORT`; the container starts Gunicorn on it automatically. It runs migrations but never runs `seed_demo` in production. Keep the existing `docker compose up --build` workflow for local development; it continues to use local PostgreSQL and filesystem media by default.
+
+Supabase Storage S3 credentials bypass Storage RLS, so keep them only in Render's server-side environment. This Django app talks directly to PostgreSQL and does not need its tables exposed through the Supabase Data API.

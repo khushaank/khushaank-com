@@ -1,5 +1,7 @@
 from datetime import timedelta
+import os
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -47,3 +49,20 @@ class PublishingTests(TestCase):
         response = self.client.get("/admin/")
         self.assertEqual(response.status_code, 302)
         self.assertIn("/admin/login/", response.url)
+
+    def test_ensure_superuser_only_creates_once(self):
+        variables = {"DJANGO_SUPERUSER_USERNAME": "render-admin", "DJANGO_SUPERUSER_EMAIL": "admin@example.test", "DJANGO_SUPERUSER_PASSWORD": "first-safe-password"}
+        previous = {key: os.environ.get(key) for key in variables}
+        os.environ.update(variables)
+        try:
+            call_command("ensure_superuser")
+            admin = User.objects.get(username="render-admin")
+            self.assertTrue(admin.check_password("first-safe-password"))
+            os.environ["DJANGO_SUPERUSER_PASSWORD"] = "do-not-overwrite"
+            call_command("ensure_superuser")
+            admin.refresh_from_db()
+            self.assertTrue(admin.check_password("first-safe-password"))
+        finally:
+            for key, value in previous.items():
+                if value is None: os.environ.pop(key, None)
+                else: os.environ[key] = value
