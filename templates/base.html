@@ -11,11 +11,11 @@
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
-  <header class="site-header wrapper"><div class="masthead"><a class="site-title" href="/">{{ site_settings.site_title }}</a><nav aria-label="Primary">{% for link in nav_links %}<a href="{{ link.url }}">{{ link.label }}</a>{% endfor %}<a class="rss-link" aria-label="RSS feed" href="{% url 'feed' %}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="18" r="2"></circle><path d="M4 10a10 10 0 0 1 10 10M4 4a16 16 0 0 1 16 16"></path></svg><span>RSS</span></a></nav></div>
+  <header class="site-header wrapper"><div class="masthead"><a class="site-title" href="/">{{ site_settings.site_title }}</a><nav aria-label="Primary">{% for link in nav_links %}<a href="{{ link.url }}">{{ link.label }}</a>{% endfor %}<a class="rss-link" aria-label="RSS feed" title="RSS feed" href="{% url 'feed' %}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="1" width="22" height="22" rx="5" fill="#f58220"></rect><circle cx="7" cy="17" r="1.7" fill="#fff"></circle><path d="M5 10a9 9 0 0 1 9 9M5 5a14 14 0 0 1 14 14" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2.2"></path></svg></a></nav></div>
   {% block header_extra %}{% endblock %}</header>
   {% block sponsor_band %}{% endblock %}
   <nav class="content-nav"><div class="wrapper"><div class="content-nav-links"><a href="{% url 'entries' %}">Entries</a><a href="{% url 'links' %}">Links</a><a href="{% url 'quotes' %}">Quotes</a><a href="{% url 'notes' %}">Notes</a><a href="{% url 'guides' %}">Guides</a><a href="{% url 'elsewhere' %}">Elsewhere</a></div><a class="nav-right" href="/#highlights">Highlights</a></div></nav>
   <main id="content" class="wrapper">{% block content %}{% endblock %}</main>
-  <footer><div class="wrapper"><a href="/about/#disclosures">Disclosures</a><a href="/about/#colophon">Colophon</a><span>©</span>{% for year in footer_years %}<a href="{% url 'year-archive' year=year %}">{{ year }}</a>{% endfor %}<button id="theme-toggle" type="button" aria-label="Change colour theme">Theme: auto</button></div></footer>
+  <footer><div class="wrapper"><a href="/about/#disclosures">Disclosures</a><a href="/about/#colophon">Colophon</a><span>©</span>{% for year in footer_years %}<a href="{% url 'year-archive' year=year %}">{{ year }}</a>{% endfor %}<button id="theme-toggle" type="button" aria-label="Change theme; currently auto" title="Change theme; currently auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor"></path><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"></circle></svg></button></div></footer>
   <script src="{% static 'js/theme.js' %}"></script>
 </body></html>
