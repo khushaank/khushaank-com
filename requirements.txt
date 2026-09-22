@@ -1,0 +1,9 @@
+Django>=5.2,<5.3
+psycopg[binary]>=3.2
+Pillow>=10.0
+Markdown>=3.7
+bleach>=6.1
+Pygments>=2.18
+WhiteNoise>=6.8
+django-storages[s3]>=1.14
+gunicorn>=23.0

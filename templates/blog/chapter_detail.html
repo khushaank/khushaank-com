@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% load publishing %}{% block content %}<article class="reading"><p><a href="{{ chapter.guide.get_absolute_url }}">{{ chapter.guide.title }}</a></p><h1>{{ chapter.number }}. {{ chapter.title }}</h1><div class="article-body">{{ chapter.body|markdownify }}</div></article>{% endblock %}

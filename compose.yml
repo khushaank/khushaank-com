@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: weblog
+      POSTGRES_USER: weblog
+      POSTGRES_PASSWORD: weblog
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U weblog -d weblog"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  web:
+    build: .
+    command: sh -c "python manage.py migrate && python manage.py seed_demo && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DEBUG: "True"
+      DATABASE_URL: postgresql://weblog:weblog@db:5432/weblog
+      ALLOWED_HOSTS: localhost,127.0.0.1
+    ports: ["8000:8000"]
+    volumes: [".:/app"]
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  postgres_data:

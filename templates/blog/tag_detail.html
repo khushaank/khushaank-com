@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<section class="timeline"><h1>{{ tag.name }} <small>{{ count }} item{{ count|pluralize }}</small></h1>{% if tag.description %}<p>{{ tag.description }}</p>{% endif %}{% include "blog/includes/timeline.html" with day_groups=day_groups %}</section>{% endblock %}

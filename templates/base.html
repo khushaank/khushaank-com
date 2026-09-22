@@ -1,0 +1,20 @@
+{% load static publishing %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.dataset.theme=localStorage.getItem('theme')||'auto'</script>
+  <title>{% block title %}{{ site_settings.site_title }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ site_settings.default_seo_description|default:site_settings.short_description }}{% endblock %}">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}"><link rel="alternate" type="application/rss+xml" title="RSS" href="{% url 'feed' %}"><link rel="alternate" type="application/atom+xml" title="Atom" href="{% url 'atom' %}">
+  <meta property="og:site_name" content="{{ site_settings.site_title }}"><meta property="og:title" content="{% block og_title %}{{ site_settings.site_title }}{% endblock %}"><meta property="og:description" content="{{ site_settings.short_description }}">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}"><link rel="stylesheet" href="{% static 'css/media.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header wrapper"><div class="masthead"><a class="site-title" href="/">{{ site_settings.site_title }}</a><nav aria-label="Primary">{% for link in nav_links %}<a href="{{ link.url }}">{{ link.label }}</a>{% endfor %}<a aria-label="RSS feed" href="{% url 'feed' %}">RSS</a></nav></div>
+  {% block header_extra %}{% endblock %}</header>
+  <nav class="content-nav"><div class="wrapper"><a href="{% url 'entries' %}">Entries</a><a href="{% url 'links' %}">Links</a><a href="{% url 'quotes' %}">Quotes</a><a href="{% url 'notes' %}">Notes</a><a href="{% url 'guides' %}">Guides</a><a href="{% url 'elsewhere' %}">Elsewhere</a><a class="nav-right" href="/#highlights">Highlights</a></div></nav>
+  <main id="content" class="wrapper">{% block content %}{% endblock %}</main>
+  <footer><div class="wrapper"><a href="/about/#disclosures">Disclosures</a><a href="/about/#colophon">Colophon</a><span>©</span>{% for year in footer_years %}<a href="{% url 'year-archive' year=year %}">{{ year }}</a>{% endfor %}<button id="theme-toggle" type="button" aria-label="Change colour theme">Theme: auto</button></div></footer>
+  <script src="{% static 'js/theme.js' %}"></script>
+</body></html>

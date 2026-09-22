@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<section class="archive"><h1>Tags</h1><ul class="tag-index">{% for tag, count in tag_counts %}<li><a href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a> <span>{{ count }}</span>{% if tag.description %}<small>{{ tag.description }}</small>{% endif %}</li>{% empty %}<li>No tags yet.</li>{% endfor %}</ul></section>{% endblock %}
