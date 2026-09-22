@@ -26,6 +26,12 @@ def content_date(item):
 
 
 @register.filter
+def archive_counts(counts):
+    labels = {"entry": ("entry", "entries"), "link": ("link", "links"), "quote": ("quote", "quotes"), "note": ("note", "notes")}
+    return ", ".join(f"{count} {labels[kind][count != 1]}" for kind, count in counts.items() if count)
+
+
+@register.filter
 def video_embed(url):
     if not url: return ""
     match = re.search(r"(?:youtube\.com/watch\?v=|youtu\.be/)([\w-]+)", url)
